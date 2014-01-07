@@ -11,6 +11,7 @@ import (
 var tpl string = `
 <html>
 <head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
   <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
   <style type="text/css">
@@ -79,6 +80,8 @@ func NewHttpHandler() http.Handler {
 			}
 		} else if r.Method == "POST" {
 			u := r.FormValue("q")
+            log.Println(u)
+
 			u, err = getFormUrl(u)
 			if err != nil {
 				err = tmpl.Execute(w, "Invalid URL")
