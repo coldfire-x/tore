@@ -37,6 +37,10 @@ func CleanUpHtml(src string) string {
 	re, _ = regexp.Compile("<iframe[\\S\\s]+?</iframe>")
 	src = re.ReplaceAllString(src, "")
 
+	// remove textare
+	re, _ = regexp.Compile("<textarea[\\S\\s]+?</textarea>")
+	src = re.ReplaceAllString(src, "")
+
 	// remove input
 	re, _ = regexp.Compile("<input[\\S\\s]+?</input>")
 	src = re.ReplaceAllString(src, "")

@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-    "runtime/debug"
+	"runtime/debug"
 )
 
 var tpl string = `
@@ -33,11 +33,16 @@ var tpl string = `
   </div>
   <div class="content">
   <h3>{{ .Title }}</h3>
-  {{ .Text | html }}
+  {{ .Text }}
   </div>
 </div>
 </body>
 </html>`
+
+type Page struct {
+	Title string
+	Text  template.HTML
+}
 
 func getFormUrl(u string) (string, error) {
 	r, err := url.Parse(u)
@@ -64,7 +69,7 @@ func NewHttpHandler() http.Handler {
 			if rev := recover(); rev != nil {
 				w.WriteHeader(500)
 				log.Println(rev)
-                debug.PrintStack()
+				debug.PrintStack()
 			}
 		}()
 
@@ -80,7 +85,7 @@ func NewHttpHandler() http.Handler {
 			}
 		} else if r.Method == "POST" {
 			u := r.FormValue("q")
-            log.Println(u)
+			log.Println(u)
 
 			u, err = getFormUrl(u)
 			if err != nil {
@@ -92,7 +97,7 @@ func NewHttpHandler() http.Handler {
 			}
 
 			title, text := GetText(u)
-            data := map[string]string{"Title": title, "Text": text}
+			data := &Page{title, template.HTML(text)}
 			err = tmpl.Execute(w, data)
 			if err != nil {
 				panic(err)

@@ -33,11 +33,8 @@ func (s *Simple) preprocess() {
 
 // return text
 func (s *Simple) Text() string {
-	re, _ := regexp.Compile("\\<[\\S\\s]+?\\>")
-	src := re.ReplaceAllString(s.cleaned, "")
-
-	re, _ = regexp.Compile("\\s{2,}")
-	s.text = re.ReplaceAllString(src, "\n")
+	re, _ := regexp.Compile("\\<img[\\S\\s]+?\\>")
+	s.text = re.ReplaceAllString(s.cleaned, "")
 
 	return ConvertToUtf8(s.text, s.charset)
 }
