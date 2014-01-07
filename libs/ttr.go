@@ -11,16 +11,12 @@ type TTR struct {
 	Url, title, text, RawContent, cleaned string
 	charset                               string
 	ratio                                 map[int]float64
-	// mean and standard deviation
-	mean, sd float64
 }
 
 // run algorithm
 func (t *TTR) RunAlg() {
 	t.preprocess()
 	t.countTextToTagRatio()
-	t.countMean()
-	t.countStandardDeviation()
 }
 
 // remove scripts, stylesheets, input, and image
@@ -72,11 +68,8 @@ func (t *TTR) countTextToTagRatio() {
 	}
 
 	t.ratio = tagratio
-}
 
-// update ratio and compute mean
-// compute ratio table's mean
-func (t *TTR) countMean() {
+	// adjust ratio
 	radius := 2
 	for i, _ := range t.ratio {
 		// start from 3
@@ -96,15 +89,6 @@ func (t *TTR) countMean() {
 
 		t.ratio[i] = sum / (2.0*float64(radius) + 1.0)
 	}
-
-	var sum float64
-	for _, m := range t.ratio {
-		sum += m
-	}
-	t.mean = sum / float64(len(t.ratio))
-}
-
-func (t *TTR) countStandardDeviation() {
 }
 
 // return text
