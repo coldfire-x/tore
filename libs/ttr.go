@@ -2,15 +2,21 @@
 
 package libs
 
+import (
+	"regexp"
+	"strings"
+)
+
 type TTR struct {
 	Url, title, text, RawContent, cleaned string
 	charset                               string
-	ratio                                 map[string]float32
+	ratio                                 map[int]float32
 }
 
 // run algorithm
 func (t *TTR) RunAlg() {
 	t.preprocess()
+	t.countTextToTagRatio()
 }
 
 // remove scripts, stylesheets, input, and image
@@ -32,11 +38,41 @@ func (t *TTR) preprocess() {
 
 // count text to tag ratio
 func (t *TTR) countTextToTagRatio() {
+	// line no : ratio
+	var tagratio = make(map[int]float32)
+
+	lines := strings.Split(t.cleaned, "\n")
+	for i, line := range lines {
+		// get all chars in angle brackets
+		re, _ := regexp.Compile("\\<[\\S\\s]+?\\>")
+		matched := re.FindAllString(line, -1)
+
+		// if no html tags found, ratio[i] = len(line)
+		if matched == nil {
+			tagratio[i] = float32(len(line))
+			continue
+		}
+
+		// number of tags
+		tags := len(matched)
+		tagchars := 0
+		for _, tt := range matched {
+			tagchars += len(tt)
+		}
+
+		// number of non tags chars
+		nontags := len(line) - tagchars
+
+		// compute text/tag ratio
+		tagratio[i] = float32(nontags) / float32(tags)
+	}
+
+	t.ratio = tagratio
 }
 
 // return text
 func (t *TTR) Text() string {
-	return ConvertToUtf8(t.cleaned, t.charset)
+	return ConvertToUtf8(t.text, t.charset)
 }
 
 // return title
