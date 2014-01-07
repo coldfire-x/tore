@@ -10,13 +10,17 @@ import (
 type TTR struct {
 	Url, title, text, RawContent, cleaned string
 	charset                               string
-	ratio                                 map[int]float32
+	ratio                                 map[int]float64
+	// mean and standard deviation
+	mean, sd float64
 }
 
 // run algorithm
 func (t *TTR) RunAlg() {
 	t.preprocess()
 	t.countTextToTagRatio()
+	t.countMean()
+	t.countStandardDeviation()
 }
 
 // remove scripts, stylesheets, input, and image
@@ -39,7 +43,7 @@ func (t *TTR) preprocess() {
 // count text to tag ratio
 func (t *TTR) countTextToTagRatio() {
 	// line no : ratio
-	var tagratio = make(map[int]float32)
+	var tagratio = make(map[int]float64)
 
 	lines := strings.Split(t.cleaned, "\n")
 	for i, line := range lines {
@@ -49,7 +53,7 @@ func (t *TTR) countTextToTagRatio() {
 
 		// if no html tags found, ratio[i] = len(line)
 		if matched == nil {
-			tagratio[i] = float32(len(line))
+			tagratio[i] = float64(len(line))
 			continue
 		}
 
@@ -64,10 +68,43 @@ func (t *TTR) countTextToTagRatio() {
 		nontags := len(line) - tagchars
 
 		// compute text/tag ratio
-		tagratio[i] = float32(nontags) / float32(tags)
+		tagratio[i] = float64(nontags) / float64(tags)
 	}
 
 	t.ratio = tagratio
+}
+
+// update ratio and compute mean
+// compute ratio table's mean
+func (t *TTR) countMean() {
+	radius := 2
+	for i, _ := range t.ratio {
+		// start from 3
+		if i <= radius {
+			continue
+		}
+
+		if i+radius > len(t.ratio) {
+			break
+		}
+
+		// adjust ratio value, [i-radius, i+radius]
+		var sum float64
+		for j := i - radius; j < i+radius; j++ {
+			sum += t.ratio[j]
+		}
+
+		t.ratio[i] = sum / (2.0*float64(radius) + 1.0)
+	}
+
+	var sum float64
+	for _, m := range t.ratio {
+		sum += m
+	}
+	t.mean = sum / float64(len(t.ratio))
+}
+
+func (t *TTR) countStandardDeviation() {
 }
 
 // return text
