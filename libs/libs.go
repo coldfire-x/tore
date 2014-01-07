@@ -37,10 +37,6 @@ func CleanUpHtml(src string) string {
 	re, _ = regexp.Compile("<input[\\S\\s]+?</input>")
 	src = re.ReplaceAllString(src, "")
 
-	// remove links
-	re, _ = regexp.Compile("<link[\\S\\s]+?/>")
-	src = re.ReplaceAllString(src, "")
-
 	// remove comment
 	re, _ = regexp.Compile("<!--[\\S\\s]+?-->")
 	src = re.ReplaceAllString(src, "")
