@@ -89,6 +89,15 @@ func ConvertToUtf8(src, encoding string) string {
 		return src
 	}
 
+    if encoding == "utf-8" {
+        return src
+    }
+
+    // charset hacking, if encoding is gb2312,use gb18030 instead
+    if encoding == "gb2312" {
+        encoding = "gb18030"
+    }
+
 	output, err := iconv.ConvertString(src, encoding, "utf-8")
 	// if error, return raw string
 	if err != nil {
