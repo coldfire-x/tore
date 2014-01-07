@@ -5,12 +5,14 @@ package libs
 import (
 	"regexp"
 	"strings"
+    "math"
 )
 
 type TTR struct {
 	Url, title, text, RawContent, cleaned string
 	charset                               string
 	ratio                                 map[int]float64
+	sd                                    float64 // standard deviation
 }
 
 // run algorithm
@@ -88,6 +90,25 @@ func (t *TTR) countTextToTagRatio() {
 		}
 
 		t.ratio[i] = sum / (2.0*float64(radius) + 1.0)
+	}
+
+    var avg, sum float64
+    for _, i := range t.ratio {
+        sum += i
+    }
+    avg = sum / float64(len(t.ratio))
+
+    sum = 0
+    for _, i := range t.ratio {
+        sum += math.Pow(i - avg, 2)
+    }
+
+    t.sd = math.Sqrt(sum/float64(len(t.ratio)-1))
+
+	for i, m := range t.ratio {
+        if m >= t.sd {
+            t.text += lines[i]
+        }
 	}
 }
 
