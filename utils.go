@@ -33,7 +33,7 @@ var tpl string = `
   </div>
   <div class="content">
   <h3>{{ .Title }}</h3>
-  <p>{{ .Text | html }}</p>
+  {{ .Text | html }}
   </div>
 </div>
 </body>
