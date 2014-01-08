@@ -31,6 +31,6 @@ How to use
     }
     
     func init() {
-        // tore.Alg = &libs.TTR{}
-        tore.Alg = &libs.Simple{}
+        // tore.SetAlg("simple")
+        tore.SetAlg("ttr")
     }
