@@ -59,10 +59,8 @@ func getFormUrl(u string) (string, error) {
 
 // handler http request
 func NewHttpHandler() http.Handler {
-	tmpl, err := template.New("index").Parse(tpl)
-	if err != nil {
-		log.Fatal(err)
-	}
+	var err error
+	tmpl, _ := template.New("index").Parse(tpl)
 
 	h := func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
