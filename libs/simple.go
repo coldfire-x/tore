@@ -45,6 +45,10 @@ func (s *Simple) Title() string {
 	return ConvertToUtf8(title, s.charset)
 }
 
-func (s *Simple) Init(url string) {
-	s.Url = url
+func NewSimple(url string) OupengAlg {
+	return &Simple{Url: url}
+}
+
+func init() {
+	RegisterAlg("simple", NewSimple)
 }

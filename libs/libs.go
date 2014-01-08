@@ -14,10 +14,30 @@ var (
 
 // algrithom to extractor text from html
 type OupengAlg interface {
-	Init(url string)
 	RunAlg()
 	Text() string
 	Title() string
+}
+
+type algType func(string) OupengAlg
+
+// algorithm name
+var (
+	Alg      algType
+	algGroup = make(map[string]algType)
+)
+
+func SetAlg(name string) {
+	name = strings.ToLower(name)
+	if i, ok := algGroup[name]; ok {
+		Alg = i
+	} else {
+		panic("Invalid Algorithm")
+	}
+}
+
+func RegisterAlg(name string, f algType) {
+	algGroup[name] = f
 }
 
 func CleanUpHtml(src string) string {
